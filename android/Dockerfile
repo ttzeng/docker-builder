@@ -1,0 +1,43 @@
+### Build the image from ubuntu 16.04 LTS
+FROM ubuntu:16.04
+
+### Allow to set-up HTTP(S) proxy using '--build-arg'
+ARG http_proxy
+ENV http_proxy ${http_proxy}
+ARG https_proxy
+ENV https_proxy ${https_proxy}
+RUN echo 'http_proxy='$http_proxy'\nhttps_proxy='$https_proxy
+
+### Clear local repository & install common tools
+RUN apt-get clean \
+ && apt-get update && apt-get install -y \
+        curl            \
+        git             \
+        unzip           \
+        vim             \
+        wget
+
+### Configuration settings & options
+ENV WORKSPACE           /opt
+ENV MOUNT               $WORKSPACE/mnt
+
+### Builder for native IoTivity
+RUN : === install the main build tools \
+ && apt-get update && apt-get install -y \
+        openjdk-8-jdk git ccache automake lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib python-networkx libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev bc bsdmainutils \
+ && : === install the repo tool\
+ && mkdir ~/bin && curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo && chmod a+x ~/bin/repo
+
+### Unset variables
+ENV http_proxy ""
+ENV https_proxy ""
+
+### Mount points for holding external volumes
+VOLUME $MOUNT
+WORKDIR $MOUNT
+
+ENTRYPOINT \
+    export PATH=~/bin:$PATH \
+ && export USER=root \
+ && export USE_CCACHE=1 \
+ && bash
