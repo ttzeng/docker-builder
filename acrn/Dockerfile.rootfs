@@ -1,0 +1,37 @@
+### Build from the Clear Linux base image in DockerHub
+FROM clearlinux:base
+
+### Allow to set-up HTTP(S) proxy using '--build-arg'
+ARG http_proxy
+ENV http_proxy ${http_proxy}
+ARG https_proxy
+ENV https_proxy ${https_proxy}
+RUN echo 'http_proxy='$http_proxy'\nhttps_proxy='$https_proxy
+
+### Configuration settings & options
+ENV WORKSPACE           /opt
+ENV MOUNT               $WORKSPACE/mnt
+
+### ACRN Clear Linux root filesystems builder
+WORKDIR $MOUNT
+RUN : === At least the following bundles are required for building the Clear Linux based \
+          OS images for the ACRN project \
+              the 'c-basic' bundle provides 'make' and other C/C++ build tools \
+              the 'curl' bundle provides 'curl' utility \
+              the 'dev-utils' bundle provides 'git' etc. development tools \
+              the 'editors' bundle provides 'vim' text editor \
+              the 'koji' bundle provides 'dnf', 'rpm', 'rpmspec', 'mock' etc. build utilities \
+              the 'mixer' bundle provides 'yum' etc. packaging utilities \
+              the 'os-utils-gui-dev' bundle provides 'jq' JSON parser \
+              the 'sysadmin-basic' bundle provides 'sudo' etc. system commands \
+ && : === Stick with specific Clear version \
+ && swupd verify --fix -m 20910 --force \
+ && : === Add the required bundles for building the ACRN OS images \
+ && swupd bundle-add os-clr-on-clr os-utils-gui-dev
+
+### Unset variables
+ENV http_proxy ""
+ENV https_proxy ""
+
+### Mount points for holding external volumes
+VOLUME $MOUNT
