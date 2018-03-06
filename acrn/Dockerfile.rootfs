@@ -25,7 +25,7 @@ RUN : === At least the following bundles are required for building the Clear Lin
               the 'os-utils-gui-dev' bundle provides 'jq' JSON parser \
               the 'sysadmin-basic' bundle provides 'sudo' etc. system commands \
  && : === Stick with specific Clear version \
- && swupd verify --fix -m 20910 --force \
+ && swupd verify --fix -m 20960 --force \
  && : === Add the required bundles for building the ACRN OS images \
  && swupd bundle-add os-clr-on-clr os-utils-gui-dev
 
@@ -35,3 +35,10 @@ ENV https_proxy ""
 
 ### Mount points for holding external volumes
 VOLUME $MOUNT
+
+ENV USER clear
+ENTRYPOINT \
+    : === drop the default root privileges \
+ && useradd --uid `find $MOUNT -maxdepth 0 -printf '%U'` $USER \
+ && usermod -G wheelnopw -a $USER \
+ && su $USER

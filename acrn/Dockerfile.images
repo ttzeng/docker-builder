@@ -33,3 +33,12 @@ ENV https_proxy ""
 
 ### Mount points for holding external volumes
 VOLUME $MOUNT
+
+ENV USER ubuntu
+ENV PASSWD ubuntu
+ENTRYPOINT \
+    : === drop the default root privileges \
+ && useradd --uid `find $MOUNT -maxdepth 0 -printf '%U'` $USER \
+ && echo "$USER:$PASSWD" | chpasswd \
+ && adduser $USER sudo \
+ && su $USER
