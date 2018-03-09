@@ -38,7 +38,9 @@ ENV USER ubuntu
 ENV PASSWD ubuntu
 ENTRYPOINT \
     : === drop the default root privileges \
- && useradd --uid `find $MOUNT -maxdepth 0 -printf '%U'` $USER \
- && echo "$USER:$PASSWD" | chpasswd \
- && adduser $USER sudo \
+ && if [ $(id -u $USER > /dev/null 2>&1; echo $?) = 1 ]; then \
+        useradd --uid `find $MOUNT -maxdepth 0 -printf '%U'` $USER; \
+        echo "$USER:$PASSWD" | chpasswd; \
+        adduser $USER sudo; \
+    fi \
  && su $USER

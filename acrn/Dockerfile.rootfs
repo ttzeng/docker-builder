@@ -39,6 +39,8 @@ VOLUME $MOUNT
 ENV USER clear
 ENTRYPOINT \
     : === drop the default root privileges \
- && useradd --uid `find $MOUNT -maxdepth 0 -printf '%U'` $USER \
- && usermod -G wheelnopw -a $USER \
+ && if [ $(id -u $USER > /dev/null 2>&1; echo $?) = 1 ]; then \
+        useradd --uid `find $MOUNT -maxdepth 0 -printf '%U'` $USER; \
+        usermod -G wheelnopw -a $USER; \
+    fi \
  && su $USER
