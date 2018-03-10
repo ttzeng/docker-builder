@@ -1,0 +1,63 @@
+### Build the image from ubuntu 14.04 LTS
+FROM ubuntu:14.04
+
+### Allow to set-up HTTP(S) proxy using '--build-arg'
+ARG http_proxy
+ENV http_proxy ${http_proxy}
+ARG https_proxy
+ENV https_proxy ${https_proxy}
+RUN echo 'http_proxy='$http_proxy'\nhttps_proxy='$https_proxy
+
+### Clear local repository & install common tools
+RUN apt-get clean \
+ && apt-get update && apt-get install -y \
+        curl            \
+        git             \
+        unzip           \
+        vim             \
+        wget
+
+### Configuration settings & options
+ENV WORKSPACE           /opt
+ENV MOUNT               $WORKSPACE/mnt
+
+### Builder for Android Open Source Project (AOSP)
+RUN : === install required packages \
+          the `gettext` package is not default installed by Ubuntu Server \
+          the `python-mako` package is required for building Android as a Guest \
+ && apt-get update && apt-get install -y \
+        git-core gnupg flex bison gperf build-essential \
+        zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 \
+        lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev ccache \
+        libgl1-mesa-dev libxml2-utils xsltproc unzip \
+        bc gettext liblz4-tool libssl-dev python-mako python-networkx \
+ && : === install OpenJDK 8 through PPA \
+          package 'software-properties-common' provides 'add-apt-repository' \
+ && apt-get update && apt-get install -y \
+        software-properties-common \
+ && add-apt-repository -y ppa:openjdk-r/ppa \
+ && apt-get update && apt-get install -y \
+        openjdk-8-jdk \
+ && : === optional update the default Java version \
+ && update-alternatives --config java \
+ && update-alternatives --config javac
+
+### Unset variables
+ENV http_proxy ""
+ENV https_proxy ""
+
+### Mount points for holding external volumes
+VOLUME $MOUNT
+WORKDIR $MOUNT
+
+ENV USER ubuntu
+ENV PASSWD ubuntu
+ENTRYPOINT \
+    : === drop the default root privileges \
+ && if [ $(id -u $USER > /dev/null 2>&1; echo $?) = 1 ]; then \
+        useradd --uid `find $MOUNT -maxdepth 0 -printf '%U'` --create-home $USER; \
+        echo "$USER:$PASSWD" | chpasswd; \
+        adduser $USER sudo; \
+    fi \
+ && export USE_CCACHE=1 \
+ && su $USER
