@@ -41,8 +41,15 @@ ENV https_proxy ""
 VOLUME $MOUNT
 WORKDIR $MOUNT
 
+ENV USER ubuntu
+ENV PASSWD ubuntu
 ENTRYPOINT \
-    export PATH=~/bin:$PATH \
- && export USER=root \
+    : === drop the default root privileges \
+ && if [ $(id -u $USER > /dev/null 2>&1; echo $?) = 1 ]; then \
+        useradd --uid `find $MOUNT -maxdepth 0 -printf '%U'` --create-home $USER; \
+        echo "$USER:$PASSWD" | chpasswd; \
+        adduser $USER sudo; \
+    fi \
+ && export PATH=~/bin:$PATH \
  && export USE_CCACHE=1 \
- && bash
+ && su $USER
