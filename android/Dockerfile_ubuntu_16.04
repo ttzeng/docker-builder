@@ -13,6 +13,7 @@ RUN apt-get clean \
  && apt-get update && apt-get install -y \
         curl            \
         git             \
+        sudo            \
         unzip           \
         vim             \
         wget
@@ -26,12 +27,14 @@ RUN : === install the main build tools \
  && apt-get update && apt-get install -y \
         openjdk-8-jdk git ccache automake lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib python-networkx libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev bc bsdmainutils \
  && : === install additional packages \
-          the `gettext` package is not default installed by Ubuntu Server \
-          the `python-mako` package is required for building Android as a Guest \
+          the 'gettext' package is not default installed by Ubuntu Server \
+          the 'python-mako' package is required for building Android as a Guest \
+          Android-IA requires 'libelf-dev','sbsigntool','dosfstools', and 'mtools' packages \
  && apt-get update && apt-get install -y \
         gettext python-mako \
+        libelf-dev sbsigntool dosfstools mtools \
  && : === install the repo tool \
- && mkdir ~/bin && curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > ~/bin/repo && chmod a+x ~/bin/repo
+ && mkdir -p /usr/local/bin && curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > /usr/local/bin/repo && chmod a+x /usr/local/bin/repo
 
 ### Unset variables
 ENV http_proxy ""
@@ -50,6 +53,5 @@ ENTRYPOINT \
         echo "$USER:$PASSWD" | chpasswd; \
         adduser $USER sudo; \
     fi \
- && export PATH=~/bin:$PATH \
  && export USE_CCACHE=1 \
  && su $USER
