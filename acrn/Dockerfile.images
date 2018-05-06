@@ -25,7 +25,7 @@ ENV MOUNT               $WORKSPACE/mnt
 WORKDIR $MOUNT
 RUN : === install build dependencies \
  && apt-get update && apt-get install -y \
-        android-tools-fsutils bc build-essential libssl-dev libpciaccess-dev openssl rsync sudo uuid-dev
+        android-tools-fsutils bc build-essential gnu-efi libssl-dev libpciaccess-dev openssl rsync sudo uuid-dev
 
 ### Unset variables
 ENV http_proxy ""
