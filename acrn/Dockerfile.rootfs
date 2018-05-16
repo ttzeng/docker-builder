@@ -24,8 +24,8 @@ RUN : === At least the following bundles are required for building the Clear Lin
               the 'mixer' bundle provides 'yum' etc. packaging utilities \
               the 'os-utils-gui-dev' bundle provides 'jq' JSON parser \
               the 'sysadmin-basic' bundle provides 'sudo' etc. system commands \
- && : === Stick with specific Clear version \
- && swupd verify --fix -m 20960 --force \
+ && : === Update to the latest Clear version \
+ && swupd update \
  && : === Add the required bundles for building the ACRN OS images \
  && swupd bundle-add os-clr-on-clr os-utils-gui-dev
 
