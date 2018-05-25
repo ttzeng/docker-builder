@@ -24,8 +24,10 @@ ENV MOUNT               $WORKSPACE/mnt
 ### ACRN images builder
 WORKDIR $MOUNT
 RUN : === install build dependencies \
+ && : ===   The ACRN CrashLog tool requires libsystemd, libxml2, libevent \
  && apt-get update && apt-get install -y \
-        android-tools-fsutils bc build-essential gnu-efi libssl-dev libpciaccess-dev openssl rsync sudo uuid-dev
+        android-tools-fsutils bc build-essential gnu-efi libssl-dev libpciaccess-dev openssl rsync sudo uuid-dev \
+        libsystemd-dev libxml2-dev libevent-dev
 
 ### Unset variables
 ENV http_proxy ""
