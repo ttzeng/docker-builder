@@ -27,7 +27,7 @@ RUN : === install build dependencies \
  && : ===   The ACRN CrashLog tool requires libsystemd, libxml2, libevent \
  && apt-get update && apt-get install -y \
         android-tools-fsutils bc build-essential gnu-efi libssl-dev libpciaccess-dev openssl rsync sudo uuid-dev \
-        libsystemd-dev libxml2-dev libevent-dev
+        libsystemd-dev libxml2-dev libevent-dev libusb-1.0-0-dev
 
 ### Unset variables
 ENV http_proxy ""
