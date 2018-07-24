@@ -13,8 +13,7 @@ RUN apt-get clean \
  && apt-get update && apt-get install -y \
         curl            \
         git             \
-        pkg-config      \
-        python3-pip     \
+        sudo            \
         unzip           \
         vim             \
         wget
@@ -23,15 +22,19 @@ RUN apt-get clean \
 ENV WORKSPACE           /opt
 ENV MOUNT               $WORKSPACE/mnt
 
-### ACRN images builder
-WORKDIR $MOUNT
-RUN : === install build dependencies \
- && : ===   The ACRN CrashLog tool requires libsystemd, libxml2, libevent \
+### Builder for Android Open Source Project (AOSP)
+RUN : === install the main build tools \
  && apt-get update && apt-get install -y \
-        android-tools-fsutils bc build-essential gnu-efi libssl-dev libpciaccess-dev openssl rsync sudo uuid-dev \
-        libsystemd-dev libxml2-dev libevent-dev libusb-1.0-0-dev \
- && : === install dependencies required by Kconfig \
- && pip3 install kconfiglib
+        openjdk-8-jdk git ccache automake lzop bison gperf build-essential zip curl zlib1g-dev g++-multilib python-networkx libxml2-utils bzip2 libbz2-dev libbz2-1.0 libghc-bzlib-dev squashfs-tools pngcrush schedtool dpkg-dev liblz4-tool make optipng maven libssl-dev bc bsdmainutils \
+ && : === install additional packages \
+          the 'gettext' package is not default installed by Ubuntu Server \
+          the 'python-mako' package is required for building Android as a Guest \
+          Android-IA requires 'libelf-dev','sbsigntool','dosfstools', and 'mtools' packages \
+ && apt-get update && apt-get install -y \
+        gettext python-mako \
+        libelf-dev sbsigntool dosfstools mtools \
+ && : === install the repo tool \
+ && mkdir -p /usr/local/bin && curl http://commondatastorage.googleapis.com/git-repo-downloads/repo > /usr/local/bin/repo && chmod a+x /usr/local/bin/repo
 
 ### Unset variables
 ENV http_proxy ""
@@ -39,6 +42,7 @@ ENV https_proxy ""
 
 ### Mount points for holding external volumes
 VOLUME $MOUNT
+WORKDIR $MOUNT
 
 ENV USER ubuntu
 ENV PASSWD ubuntu
@@ -49,4 +53,5 @@ ENTRYPOINT \
         echo "$USER:$PASSWD" | chpasswd; \
         adduser $USER sudo; \
     fi \
+ && export USE_CCACHE=1 \
  && su $USER
