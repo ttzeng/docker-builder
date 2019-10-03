@@ -25,7 +25,7 @@ ENV MOUNT               $WORKSPACE/mnt
 
 WORKDIR $WORKSPACE
 RUN : === Download and unpack Intel® Distribution of OpenVINO toolkit package file \
- && curl -O http://registrationcenter-download.intel.com/akdlm/irc_nas/15792/l_openvino_toolkit_p_2019.2.275.tgz \
+ && curl -O http://registrationcenter-download.intel.com/akdlm/irc_nas/15944/l_openvino_toolkit_p_2019.3.334.tgz \
  && tar zxvf l_openvino_toolkit_*.tgz \
  && : === Install software dependencies and the core components of the toolkit \
  && cd l_openvino_toolkit_*; ./install_openvino_dependencies.sh -y \
@@ -40,11 +40,11 @@ RUN : === Download and unpack Intel® Distribution of OpenVINO toolkit package f
  && cd /opt/intel/openvino/deployment_tools/model_optimizer/install_prerequisites; ./install_prerequisites.sh \
  && : === Install OpenCL for Intel GPU \
  && cd /opt/intel/openvino/install_dependencies; mkdir neo; cd neo \
- && wget https://github.com/intel/compute-runtime/releases/download/19.34.13959/intel-gmmlib_19.2.3_amd64.deb \
- && wget https://github.com/intel/compute-runtime/releases/download/19.34.13959/intel-igc-core_1.0.10-2456_amd64.deb \
- && wget https://github.com/intel/compute-runtime/releases/download/19.34.13959/intel-igc-opencl_1.0.10-2456_amd64.deb \
- && wget https://github.com/intel/compute-runtime/releases/download/19.34.13959/intel-opencl_19.34.13959_amd64.deb \
- && wget https://github.com/intel/compute-runtime/releases/download/19.34.13959/intel-ocloc_19.34.13959_amd64.deb \
+ && wget https://github.com/intel/compute-runtime/releases/download/19.38.14237/intel-gmmlib_19.2.4_amd64.deb \
+ && wget https://github.com/intel/compute-runtime/releases/download/19.38.14237/intel-igc-core_1.0.11-2500_amd64.deb \
+ && wget https://github.com/intel/compute-runtime/releases/download/19.38.14237/intel-igc-opencl_1.0.11-2500_amd64.deb \
+ && wget https://github.com/intel/compute-runtime/releases/download/19.38.14237/intel-opencl_19.38.14237_amd64.deb \
+ && wget https://github.com/intel/compute-runtime/releases/download/19.38.14237/intel-ocloc_19.38.14237_amd64.deb \
  && dpkg -i *.deb \
  && apt-get install -y ocl-icd-opencl-dev
 
